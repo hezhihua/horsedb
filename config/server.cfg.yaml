@@ -1,0 +1,31 @@
+
+db:
+  host: 10.128.8.132
+  port: 3306
+  user: parking_root
+  pass: J3Lt1Pv!49iF51
+  charset: utf8mb4 
+  name: parking_lot
+  count: 3
+  
+server: 
+  bind_mysql: tcp -h 0.0.0.0 -p 8083 -t 60000
+  bind_rpc: tcp -h 0.0.0.0 -p 8085 -t 60000
+  max_conns: 10240
+  threads: 3
+  asyncqueuecap: 100000
+
+
+
+raft:
+  storage_type: rocksdb
+  groupid: g1
+  bootstrap-expect: 3
+  init_nodes : tcp -h 0.0.0.0 -p 8085:tcp -h 0.0.0.0 -p 8085:tcp -h 0.0.0.0 -p 8085
+  election_timeout_ms :
+  max_clock_drift_ms :
+  snapshot_interval_s: 
+  
+
+rocksdb:
+  path: ./db
