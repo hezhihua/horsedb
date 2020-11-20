@@ -51,7 +51,7 @@ select * from tbname;
 
 # 感谢
 1,horsedb底层用[RocksDB](https://github.com/facebook/rocksdb)作为存储引擎  
-2,列和索引等数据的设计参考了[tidb](https://github.com/pingcap/tidb)的设计理念  
+2,列和索引等数据的组织结构参考了[tidb](https://github.com/pingcap/tidb)的设计理念  
 
 # 学习和交流
 QQ群:1124085420  
