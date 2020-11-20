@@ -29,7 +29,10 @@ echo "source /opt/rh/devtoolset-7/enable" >>/etc/profile
 2,mkdir build && cd build && cmake ..  && make 
 
 # 用法
-安装完horsedb后,可以用Mysql客户端直接连接登录到horsedb  
+安装完horsedb后,启动horsedb
+./horsedb-server ./config/server.cfg.yaml 
+启动成功后，可以用Mysql客户端直接连接登录到horsedb ,如
+mysql  -u hzh -h 0.0.0.0  -P 8083 -p'hzh' test 
 
 create database dbtest  
 create table tbname  
