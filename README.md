@@ -10,9 +10,9 @@
 | iguana版本 | 最新版本 |
 | snappy | 1.1.7 |
 # 特性
-1, 支持Mysql协议
-2, 多副本备份 
-3, 适合写多读少场景
+1, 支持Mysql协议  
+2, 多副本备份   
+3, 适合写多读少场景  
 
 
 # 编译和安装  
@@ -24,15 +24,15 @@ scl命令启用只是临时的，退出shell或重启就会恢复原系统gcc版
 如果要长期使用gcc 7.3的话,执行：
 echo "source /opt/rh/devtoolset-7/enable" >>/etc/profile   
 
-以下步骤开始安装horsedb  
+以下步骤开始安装horsedb   
 1,git clone https://github.com/hezhihua/horsedb.git  
 2,mkdir build && cd build && cmake ..  && make 
 
-# 用法
-安装完horsedb后,启动horsedb
-./horsedb-server ./config/server.cfg.yaml 
-启动成功后，可以用Mysql客户端直接连接登录到horsedb ,如
-mysql  -u hzh -h 0.0.0.0  -P 8083 -p'hzh' test 
+# 用法  
+安装完horsedb后,启动horsedb  
+./horsedb-server ./config/server.cfg.yaml   
+启动成功后，可以用Mysql客户端直接连接登录到horsedb ,如  
+mysql  -u hzh -h 0.0.0.0  -P 8083 -p'hzh' test   
 
 create database dbtest  
 create table tbname  
