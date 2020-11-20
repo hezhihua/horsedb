@@ -15,6 +15,7 @@
 3, 适合写多读少场景  
 
 
+
 # 编译和安装  
 如果gcc 版本太旧,先升级gcc版本 到7.3    
 1,yum -y install centos-release-scl     
@@ -41,7 +42,7 @@ show databases;
 show tables;  
 
 # TODO   
-1,
+1,delete语法,group by等语法
 
 
 # 感谢
