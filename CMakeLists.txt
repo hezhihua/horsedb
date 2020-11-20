@@ -11,7 +11,7 @@ set_target_properties(${TARGET} PROPERTIES
 COMPILE_FLAGS "-pthread"
 LINK_FLAGS "-pthread")
 
-include(src/cmake/thirdparty.cmake)
+include(cmake/thirdparty.cmake)
 
 include_directories(./src)
 include_directories(./src/include)
