@@ -1,5 +1,5 @@
 # horsedb
-
+HorseDB是一款以rocksdb作为存储引擎的数据库,兼容了Mysql协议,适合写多读少场景  
 
 # 依赖环境
 | 软件	 | 要求 |
