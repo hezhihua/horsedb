@@ -6,6 +6,7 @@ HorseDB是一款以rocksdb作为存储引擎的数据库,兼容了Mysql协议,�
 | ----- | ----- |
 | gcc版本 | 需要支持c++14,最好7或以上 |
 | cmake版本 | 3.10及以上版本 |
+| horse-rpc版本 |  最新版本 |
 | horse-raft版本 |  最新版本 |
 | iguana版本 | 最新版本 |
 | snappy | 1.1.7 |
