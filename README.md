@@ -41,6 +41,9 @@ create table tbname
 show databases;  
 show tables;  
 
+insert into tbname() values();  
+select * from tbname;  
+
 # TODO   
 1,delete、update语法,group by等语法  
 2,事务实现  
