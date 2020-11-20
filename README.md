@@ -43,6 +43,7 @@ show tables;
 
 # TODO   
 1,delete、update语法,group by等语法
+2,事务实现
 
 
 # 感谢
