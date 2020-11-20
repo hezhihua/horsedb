@@ -42,7 +42,7 @@ show databases;
 show tables;  
 
 # TODO   
-1,delete语法,group by等语法
+1,delete、update语法,group by等语法
 
 
 # 感谢
