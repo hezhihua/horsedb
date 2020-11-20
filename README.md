@@ -11,7 +11,7 @@ HorseDB是一款以rocksdb作为存储引擎的数据库,兼容了Mysql协议,�
 | snappy | 1.1.7 |
 # 特性
 1, 支持Mysql协议  
-2, raft协议多副本备份   
+2, 支持raft一致性协议多副本备份   
 3, 适合写多读少场景  
 
 
