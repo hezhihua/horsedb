@@ -11,18 +11,19 @@ set_target_properties(${TARGET} PROPERTIES
 COMPILE_FLAGS "-pthread"
 LINK_FLAGS "-pthread")
 
+include(src/cmake/thirdparty.cmake)
 
 include_directories(./src)
 include_directories(./src/include)
-include_directories(./horse-rpc/src/include)
-include_directories(./horse-raft/src/include)
+include_directories(./third-party/horse-raft/third-party/horse-rpc/include)
+include_directories(./third-party/horse-raft/include)
 
-include_directories(./horse-rpc/third-party/spdlog-1.x/include)
-include_directories(./horse-raft/third-party/yaml-cpp-yaml-cpp-0.6.3/include)
-include_directories(./horse-raft/third-party/rocksdb-6.11.4/include)
+include_directories(./third-party/horse-raft/third-party/spdlog/include)
+include_directories(./third-party/horse-raft/third-party/yaml-cpp/include)
+include_directories(./third-party/horse-raft/third-party/rocksdb/include)
 
-include_directories(./src/thrid/iguana)
-include_directories(./src/thrid/sql-parser/src)
+include_directories(./third-party/iguana)
+include_directories(./third-party/sql-parser/src)
 
 
 FILE(GLOB_RECURSE SRC_LIST 
@@ -38,18 +39,25 @@ src/mysql/socket_context.cpp
 
 )
 
-ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/horse-rpc)
-ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/horse-raft)
 
-LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/horse-raft/lib)
-LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/horse-rpc/lib)
-LINK_DIRECTORIES(/root/svn/horsedb/src/lib)
+LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/third-party/horse-raft/third-party/rocksdb/lib)
+LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/third-party/horse-raft/third-party/yaml-cpp/lib)
+LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/third-party/horse-raft/lib)
+LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/third-party/horse-raft/third-party/horse-rpc/lib)
+
+
+LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/third-party/snappy/lib64)
+LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/third-party/sql-parser/lib)
 
 link_libraries(horse-raft)
 link_libraries(horse-rpc)
-link_libraries(sqlparser)
 link_libraries(rocksdb)
-link_libraries(snappy)
 link_libraries(yaml-cpp)
+
+link_libraries(snappy)
+link_libraries(dl)
+link_libraries(z)
+link_libraries(bz2)
+link_libraries(sqlparser)
 
 add_executable(horsedb-server ${SRC_LIST})
