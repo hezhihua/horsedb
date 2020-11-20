@@ -15,10 +15,10 @@
 3, 适合写多读少场景
 
 
-# 编译和安装
-如果gcc 版本太旧,先升级gcc版本 到7.3 
-1,yum -y install centos-release-scl   
-2,yum -y install devtoolset-7-gcc devtoolset-7-gcc-c++ devtoolset-7-binutils  
+# 编译和安装  
+如果gcc 版本太旧,先升级gcc版本 到7.3    
+1,yum -y install centos-release-scl     
+2,yum -y install devtoolset-7-gcc devtoolset-7-gcc-c++ devtoolset-7-binutils   
 3,scl enable devtoolset-7 bash  
 scl命令启用只是临时的，退出shell或重启就会恢复原系统gcc版本,所以这种方式不会污染原来的编译环境。  
 如果要长期使用gcc 7.3的话,执行：
