@@ -30,9 +30,11 @@ FILE(GLOB_RECURSE SRC_LIST
 
 src/server/mysql_handle.cpp 
 src/server/horsedb_server.cpp 
+src/server/StateMachineImp.cpp
 
 src/kv/meta.cpp
 src/kv/table.cpp
+src/kv/dbimp.cpp
 src/mysql/command.cpp
 src/mysql/mysql_packet.cpp
 src/mysql/socket_context.cpp
@@ -58,6 +60,8 @@ link_libraries(snappy)
 link_libraries(dl)
 link_libraries(z)
 link_libraries(bz2)
+link_libraries(zstd)
+link_libraries(lz4)
 link_libraries(sqlparser)
 
 add_executable(horsedb-server ${SRC_LIST})

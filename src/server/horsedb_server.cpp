@@ -16,6 +16,9 @@
 #include "cfg/config.h"
 
 #include "raft/RaftDB.h"
+
+#include "kv/dbimp.h"
+
 using namespace std;
 using namespace horsedb;
 using namespace spdlog;
@@ -47,7 +50,7 @@ void HorsedbServer::initialize(const string &cfgPath)
 	// _async_logger->info("This is a basic logger.");
 	// daily_logger->info("This is a basic logger.");
 
-	horsedb::Logger::getInstance()->init("horsedb", "logs/horsedb.log");
+	horsedb::Logger::getInstance()->init("horsedb", "logs/horsedb.log", "logs/horsedb.raft.log");
 
 
 	_epollServer->setLocalLogger(horsedb::Logger::getInstance()->getLogger());
@@ -58,9 +61,8 @@ void HorsedbServer::initialize(const string &cfgPath)
 	horsedb::Config::getInstance()->init(_cfgPath);//YAML::LoadFile(_cfgPath);// /root/svn/horsedb/config/server.cfg.yaml
 	auto &_config=Config::getInstance()->getConfig();
 
-	cout << "host:" << _config["db"]["host"].as<string>() << endl;
-	cout << "name:" << _config["db"]["name"].as<string>() << endl;
-	cout << "port:" << _config["db"]["port"].as<string>() << endl;
+	_bRaft=_config["server"]["raft_enable"].as<bool>();
+
 	cout << "bind_mysql:" <<_config["server"]["bind_mysql"].as<string>()<< endl;
 	cout << "rocksdb.path:" <<_config["rocksdb"]["path"].as<string>()<< endl;
 
@@ -69,8 +71,16 @@ void HorsedbServer::initialize(const string &cfgPath)
 	
 
 	string rocksdbPath=_config["rocksdb"]["path"].as<string>();
-	vector<string> vdb={"sys","test"};
-	_db=shared_ptr<DBBase>(DBBase::getInstance());
+	string dbNames=_config["rocksdb"]["dbname"].as<string>();
+	vector<string> vdb=TC_Common::sepstr<string>(dbNames,",");
+	auto it=std::find(vdb.begin(),vdb.end(),"sys");
+	if (it==vdb.end())
+	{
+		vdb.push_back("sys");
+	}
+
+	_db= _bRaft? shared_ptr<DBBase>(DBBaseImp::getInstance()) : shared_ptr<DBBase>(DBBase::getInstance());
+
 	_db->init(rocksdbPath,vdb);
 	//_db= std::make_shared<DBBase>(rocksdbPath,vdb);
 	_meta=std::make_shared<Meta>(_db);
@@ -96,13 +106,11 @@ void HorsedbServer::initialize(const string &cfgPath)
 		//_mPrx[vAddr[i]]=_pPrx;
 		
 	}
-	
-
-
-	
-	
-
-	
+		
+	if (_bRaft)
+	{
+		_smImp.start();
+	}
 
 }
 
@@ -153,7 +161,7 @@ void HorsedbServer::bindRPC()
 	//设置adapter名称, 唯一
 	lsPtr->setName("RpcAdapter");
 	//设置绑定端口
-	lsPtr->setEndpoint(_config["server"]["bind_rpc"].as<string>());
+	lsPtr->setEndpoint(_config["raft"]["local_node"].as<string>());
 	//设置最大连接数
 	lsPtr->setMaxConns(TC_EpollServer::BindAdapter::DEFAULT_MAX_CONN);
 

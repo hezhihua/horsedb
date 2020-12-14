@@ -8,6 +8,7 @@
 #include "kv/meta.h"
 #include "kv/table.h"
 #include "raft/RaftDB.h"
+#include "StateMachineImp.h"
 
 
 
@@ -43,6 +44,8 @@ public:
 	map<string,RaftDBPrx> _mPrx;
 	Communicator* _comm;
 
+	StateMachineImp _smImp;
+	bool _bRaft;
 
 };
 

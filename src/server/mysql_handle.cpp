@@ -13,7 +13,7 @@
 #include "server/horsedb_server.h"
 #include "mysql/command.h"
 #include "client/Communicator.h"
-
+#include "cfg/config.h"
 
 
 using namespace std;
@@ -199,19 +199,19 @@ class RaftDBCallback:public RaftDBPrxCallback
 						AppendEntriesReq tReq;
 						AppendEntriesRes tRes;
 						
-						//int ret=g_app._pPrx->appendEntries(tReq,tRes);
-						typedef shared_ptr<RaftDBCallback> RaftDBCallbackPtr;//RaftDBPrxCallbackPtr
-						RaftDBCallbackPtr callback(new RaftDBCallback());
+						
+						// typedef shared_ptr<RaftDBCallback> RaftDBCallbackPtr;//RaftDBPrxCallbackPtr
+						// RaftDBCallbackPtr callback(new RaftDBCallback());
 
 
-						tReq.groupID="groupid is 1";
-           				 g_app._pPrx->async_appendEntries(callback,tReq);
+						// tReq.groupID="groupid is 1";
+           				//  g_app._pPrx->async_appendEntries(callback,tReq);
 
-						horsedb::TarsOutputStream<BufferWriter> os;
-						tReq.writeTo(os);
+						// horsedb::TarsOutputStream<BufferWriter> os;
+						// tReq.writeTo(os);
 
 
-						cout<<"========rpc,AppendEntries,ret="<<0<<",tRes.term="<< tRes.term<<endl;
+						// cout<<"========rpc,AppendEntries,ret="<<0<<",tRes.term="<< tRes.term<<endl;
 						
 					}
 					catch(const std::exception& e)
@@ -262,7 +262,7 @@ class RaftDBCallback:public RaftDBPrxCallback
 							break;
 						}
 						
-						
+						auto &config=Config::getInstance()->getConfig();
 						hsql::SQLParserResult result;
 						hsql::SQLParser::parse(sSQL, &result);
 						if (result.isValid()) 
@@ -324,9 +324,17 @@ class RaftDBCallback:public RaftDBPrxCallback
 											cout<<"*(createSt->columns).size()= "<<(*(createSt->columns)).size()<<endl;
 										}
 										
-										
 										g_app._table->create(createSt,tSocketContext._defaultDB);
-										SocketContext::sendOK(tSocketContext, send,this);
+										
+										if (!g_app._bRaft)
+										{
+											SocketContext::sendOK(tSocketContext, send,this);
+										}
+										else
+										{
+											g_app._smImp.add_cp_task(tSocketContext, send,this);
+										}
+										
 										return ;
 
 									}
@@ -340,7 +348,16 @@ class RaftDBCallback:public RaftDBPrxCallback
 										const InsertStatement* insertSt = static_cast<const hsql::InsertStatement*>(statement);
 										cout<<"*(insertSt->columns).size()= "<<(*(insertSt->columns)).size()<<endl;
 										g_app._table->insertTable(insertSt,tSocketContext._defaultDB);
-										SocketContext::sendOKFull(tSocketContext,send,this,1,0,SERVER_STATUS_AUTOCOMMIT,0);
+										
+										if (!g_app._bRaft)
+										{
+											SocketContext::sendOKFull(tSocketContext,send,this,1,0,SERVER_STATUS_AUTOCOMMIT,0);
+										}
+										else
+										{
+											g_app._smImp.add_cp_task(tSocketContext, send,this);
+										}
+
 										return ;
 
 									}

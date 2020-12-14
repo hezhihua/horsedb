@@ -1,4 +1,5 @@
 #include "kv/table.h"
+#include "kv/kvcmd.h"
 #include "util/tc_common.h"
 
 #include<iostream>

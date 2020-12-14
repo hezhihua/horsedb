@@ -13,19 +13,20 @@ struct ContextDetail{
 };
 struct ClientContextImp:public ClientContext
 {
+    ClientContextImp(void *contextdt):ClientContext(contextdt)
+    {
+        init();
+    }
     void init()
     {
-        if (_context!=nullptr;)
+        if (_contextdt!=nullptr)
         {
-            _tContextDetail=*(ContextDetail *)_context;
+            _tContextDetail=*(ContextDetail *)_contextdt;
         }
         
         
     }
-    ClientContextImp(const SocketContext &socketContext,shared_ptr<TC_EpollServer::SendContext> sc,TC_EpollServer::Handle *handle)
-    {
 
-    }
 
     void send()
     {
