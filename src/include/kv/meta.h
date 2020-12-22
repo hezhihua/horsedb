@@ -80,10 +80,10 @@ class  Meta
         bool checkTable(const string &tableName,string &value,const string &dbName);
         bool checkIndex(const string &tableName,const string &columnName,string &value,const string &dbName);
 
-        bool getDBID(string &dbID,const string &dbName);
-        bool getTbID(const string &tableName,string &tbID,const string &dbName);
-        bool getRowID(const string &tableName,string &rowID,const string &dbName);
-        bool getIndexID(const string &tableName,const string &columnName,string &indexID,const string &dbName);
+        bool getDBID(string &dbID,const string &dbName,const map<string,string> &mSession=map<string,string>());
+        bool getTbID(const string &tableName,string &tbID,const string &dbName,const map<string,string> &mSession=map<string,string>());
+        bool getRowID(const string &tableName,string &rowID,const string &dbName,const map<string,string> &mSession=map<string,string>());
+        bool getIndexID(const string &tableName,const string &columnName,string &indexID,const string &dbName,const map<string,string> &mSession=map<string,string>());
 
         string tableIDKey(const string &tableName,const string &dbName);
         string indexIDKey(const string &tableName,const string &columnName,const string &dbName);
@@ -91,7 +91,7 @@ class  Meta
 
         string tableMetaKey(const string &tableName,const string &dbName);
         bool   getDBTables( vector<string> &vTable,const string &dbName);
-        bool saveMeta(const string &tableName,string &value,const string &dbName);
+        bool saveMeta(const string &tableName,string &value,const string &dbName,const map<string,string> &mSession=map<string,string>());
 
 
         Meta(std::shared_ptr<DBBase> dbPtr);

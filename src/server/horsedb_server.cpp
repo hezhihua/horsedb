@@ -79,7 +79,9 @@ void HorsedbServer::initialize(const string &cfgPath)
 		vdb.push_back("sys");
 	}
 
-	_db= _bRaft? shared_ptr<DBBase>(DBBaseImp::getInstance()) : shared_ptr<DBBase>(DBBase::getInstance());
+	_db=_bRaft?shared_ptr<DBBaseImp>(new DBBaseImp()):shared_ptr<DBBase>(new DBBase());
+
+	//_db=shared_ptr<DBBase>(pdb);
 
 	_db->init(rocksdbPath,vdb);
 	//_db= std::make_shared<DBBase>(rocksdbPath,vdb);

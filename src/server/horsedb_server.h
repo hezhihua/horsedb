@@ -29,6 +29,18 @@ public:
 
     void waitForShutdown();
 
+	std::shared_ptr<DBBase>& getDB(){return _db;}
+
+	bool isLeader()
+	{ 
+		if (_smImp._node)
+		{
+			return _smImp._node->is_leader();
+		}
+		
+		return false;
+	}
+
 
     //std::shared_ptr<spdlog::logger>&  getlogger(){return _async_logger;}
 	string _cfgPath;
@@ -46,6 +58,8 @@ public:
 
 	StateMachineImp _smImp;
 	bool _bRaft;
+
+	std::atomic<int64_t> _sessionid;
 
 };
 

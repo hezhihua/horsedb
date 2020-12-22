@@ -2,26 +2,32 @@
 #define _RAFT_CLIENT_CONTEXT_IMP_
 #include "server/mysql_handle.h"
 #include "raft/LogEntryContext.h"
+#include "logger/logger.h"
 
 namespace horsedb {
 
-struct ContextDetail{
+struct ContextDetail :public ClientContextOption{
 
     SocketContext _socketContext;
     shared_ptr<TC_EpollServer::SendContext> _sc;
     TC_EpollServer::Handle *_handle;
+    bool bSend;
+
 };
+
+
 struct ClientContextImp:public ClientContext
 {
-    ClientContextImp(void *contextdt):ClientContext(contextdt)
+    ClientContextImp(ClientContextOption *contextOption):ClientContext(contextOption)
     {
+        _cco=contextOption;
         init();
     }
     void init()
     {
-        if (_contextdt!=nullptr)
+        if (_cco!=nullptr)
         {
-            _tContextDetail=*(ContextDetail *)_contextdt;
+            _tContextDetail=dynamic_cast<ContextDetail*>(_cco);
         }
         
         
@@ -32,16 +38,17 @@ struct ClientContextImp:public ClientContext
     {
         if (_CommandType==CM_Put)
         {
-            SocketContext::sendOKFull(_tContextDetail._socketContext,_tContextDetail._sc,_tContextDetail._handle,1,0,2,0);
+            TLOGINFO_RAFT( "sendOKFull,sid="<< _sessionid <<endl);
+            SocketContext::sendOKFull(_tContextDetail->_socketContext,_tContextDetail->_sc,_tContextDetail->_handle,1,0,2,0);
         }
         else if (_CommandType==CM_Del)
         {
-            SocketContext::sendOK(_tContextDetail._socketContext,_tContextDetail._sc,_tContextDetail._handle);
+            SocketContext::sendOK(_tContextDetail->_socketContext,_tContextDetail->_sc,_tContextDetail->_handle);
         }
 
     }
     
-    ContextDetail _tContextDetail;
+    ContextDetail *_tContextDetail;
 };
 
 }

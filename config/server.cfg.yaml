@@ -12,7 +12,7 @@ raft:
   groupid: g1
   bootstrap-expect: 3
   local_node: tcp -h 0.0.0.0 -p 8085 -t 60000
-  init_nodes : tcp -h 0.0.0.0 -p 8085:tcp -h 0.0.0.0 -p 8085:tcp -h 0.0.0.0 -p 8085
+  init_nodes : tcp -h 0.0.0.0 -p 8085:tcp -h 0.0.0.0 -p 8086:tcp -h 0.0.0.0 -p 8087
   election_timeout_ms : 5000
   max_clock_drift_ms :  1000
   snapshot_interval_s: 30

@@ -119,10 +119,10 @@ namespace horsedb{
 
         int initTable();
         int fillTable(const CreateStatement* createSt);
-        int createTable(const CreateStatement* createSt,const string &dbname);
+        int createTable(const CreateStatement* createSt,const string &dbname,const map<string,string> &mSession=map<string,string>());
         int parseInsert(const InsertStatement* insertSt,vector<string> &vColumnName, vector<string> &vData, string &tbname);
-        int insertTable(const InsertStatement* insertSt,const string &dbname);
-        string insertTbKey(const string &tbname,string &sRowID);
+        int insertTable(const InsertStatement* insertSt,const string &dbname,const map<string,string> &mSession=map<string,string>());
+        string insertTbKey(const string &tbname,string &sRowID,const map<string,string> &mSession=map<string,string>());
         int selectTable(const SelectStatement* insertSt,vector<string> &vColumnName, vector<map<string,string>> &mData, const string &dbname);
         string getPreRowKeyByTb(const string &tbname);
         string IndexNotUniqueKey(const string &tbname,const string &columnName,const string &columnValue,const string &sRowID);
@@ -132,8 +132,8 @@ namespace horsedb{
                       const map<string,string> &mCondition=map<string,string>());
         void indexRowKey2RowKey(const string &tbname,const vector<string> &vIndexRowKey,vector<string> &vRowKey);
 
-        int createDatabase(const CreateStatement* createSt);
-        int create(const CreateStatement* createSt,const string &dbname);
+        int createDatabase(const CreateStatement* createSt,const map<string,string> &mSession=map<string,string>());
+        int create(const CreateStatement* createSt,const string &dbname,const map<string,string> &mSession=map<string,string>());
         int getDBTables(vector<string> &vTable,const string &dbname);
         bool getPrivateKeyName(const Table &tb,string& sPrivateColumnName);
         bool getMetaTable(const string &tbname,const string &dbname,Table &tTable);

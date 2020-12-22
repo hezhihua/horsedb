@@ -262,7 +262,7 @@ class RaftDBCallback:public RaftDBPrxCallback
 							break;
 						}
 						
-						auto &config=Config::getInstance()->getConfig();
+						//auto &config=Config::getInstance()->getConfig();
 						hsql::SQLParserResult result;
 						hsql::SQLParser::parse(sSQL, &result);
 						if (result.isValid()) 
@@ -318,13 +318,16 @@ class RaftDBCallback:public RaftDBPrxCallback
 
 									case kStmtCreate:
 									{
+										g_app._sessionid++;
+										string sSessionID="sess-"+TC_Common::tostr<int64_t>(g_app._sessionid) ;
+										map<string,string> mSession={{"sid",sSessionID}};
 										const CreateStatement* createSt = static_cast<const hsql::CreateStatement*>(statement);
 										if (createSt->columns)
 										{
 											cout<<"*(createSt->columns).size()= "<<(*(createSt->columns)).size()<<endl;
 										}
 										
-										g_app._table->create(createSt,tSocketContext._defaultDB);
+										g_app._table->create(createSt,tSocketContext._defaultDB,mSession);
 										
 										if (!g_app._bRaft)
 										{
@@ -332,7 +335,7 @@ class RaftDBCallback:public RaftDBPrxCallback
 										}
 										else
 										{
-											g_app._smImp.add_cp_task(tSocketContext, send,this);
+											g_app._smImp.add_cp_task(tSocketContext, send,this,sSessionID);
 										}
 										
 										return ;
@@ -345,9 +348,12 @@ class RaftDBCallback:public RaftDBPrxCallback
 										break;
 									case kStmtInsert:
 									{
+										g_app._sessionid++;
+										string sSessionID="sess-"+TC_Common::tostr<int64_t>(g_app._sessionid) ;
+										map<string,string> mSession={{"sid",sSessionID}};
 										const InsertStatement* insertSt = static_cast<const hsql::InsertStatement*>(statement);
 										cout<<"*(insertSt->columns).size()= "<<(*(insertSt->columns)).size()<<endl;
-										g_app._table->insertTable(insertSt,tSocketContext._defaultDB);
+										g_app._table->insertTable(insertSt,tSocketContext._defaultDB,mSession);
 										
 										if (!g_app._bRaft)
 										{
@@ -355,7 +361,7 @@ class RaftDBCallback:public RaftDBPrxCallback
 										}
 										else
 										{
-											g_app._smImp.add_cp_task(tSocketContext, send,this);
+											g_app._smImp.add_cp_task(tSocketContext, send,this,sSessionID);
 										}
 
 										return ;

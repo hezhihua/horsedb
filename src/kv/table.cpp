@@ -116,7 +116,7 @@ namespace horsedb {
     }
 
 
-int Table::create(const CreateStatement* createSt,const string &dbname)
+int Table::create(const CreateStatement* createSt,const string &dbname,const map<string,string> &mSession)
 {
     int iRet=-1;
     do
@@ -132,14 +132,14 @@ int Table::create(const CreateStatement* createSt,const string &dbname)
         {
             if (createSt->schema)
             {
-                createDatabase(createSt);
+                createDatabase(createSt,mSession);
             }
             
             
         }
         else if (createSt->type== hsql:: kCreateTable)
         {
-            createTable(createSt,dbname);
+            createTable(createSt,dbname,mSession);
         }
 
         iRet=0;
@@ -148,7 +148,7 @@ int Table::create(const CreateStatement* createSt,const string &dbname)
     } while (0);
     return iRet;
 }
-int Table::createDatabase(const CreateStatement* createSt)
+int Table::createDatabase(const CreateStatement* createSt,const map<string,string> &mSession)
 {
     int iRet=-1;
     do
@@ -157,7 +157,7 @@ int Table::createDatabase(const CreateStatement* createSt)
         if (createSt->schema)
         {
             _dbname=createSt->schema;
-            _dbPtr->Create(createSt->schema);
+            _dbPtr->Create(createSt->schema,mSession);
         }
         
         iRet=0;
@@ -179,7 +179,7 @@ int Table::getDBTables(vector<string> &vTable,const string &dbname)
 
 }
 
-    int Table::createTable(const CreateStatement* createSt,const string &dbname)
+    int Table::createTable(const CreateStatement* createSt,const string &dbname,const map<string,string> &mSession)
     {
         int iRet=-1;
         do
@@ -197,14 +197,14 @@ int Table::getDBTables(vector<string> &vTable,const string &dbname)
             
             cout<<"_dbname="<<_dbname<<endl;
             string dbID,tbID,indexID;
-            if (!_metaPtr->getDBID(dbID,dbname))
+            if (!_metaPtr->getDBID(dbID,dbname,mSession))
             {
                 cout<<"error,getDBID"<<endl;
                 break;
                 
             }
 
-            if (!_metaPtr->getTbID(_name,tbID,dbname))
+            if (!_metaPtr->getTbID(_name,tbID,dbname,mSession))
             {
                 cout<<"error,getTbID"<<endl;
                 break;
@@ -214,7 +214,7 @@ int Table::getDBTables(vector<string> &vTable,const string &dbname)
             {
                 if (_vKey[i]._vColumnName.size())
                 {
-                    if (!_metaPtr->getIndexID(_name,_vKey[i]._vColumnName[0],indexID,dbname))
+                    if (!_metaPtr->getIndexID(_name,_vKey[i]._vColumnName[0],indexID,dbname,mSession))//暂时只能建立单字段索引 
                     {
                         cout<<"error,getIndexID"<<endl;
                         break;
@@ -228,7 +228,7 @@ int Table::getDBTables(vector<string> &vTable,const string &dbname)
             iguana::json::to_json(ss, *this);//*this
             auto json_str = ss.str();
             cout<<"json_str="<<json_str<<endl;
-            _metaPtr->saveMeta(_name,json_str,dbname);
+            _metaPtr->saveMeta(_name,json_str,dbname,mSession);
             iRet=0;
         } while (0);
         
@@ -300,7 +300,7 @@ int Table::getDBTables(vector<string> &vTable,const string &dbname)
     }
 
 
-    int Table::insertTable(const InsertStatement* insertSt,const string &dbname)
+    int Table::insertTable(const InsertStatement* insertSt,const string &dbname,const map<string,string> &mSession)
     {
         int iRet=-1;
         do
@@ -384,14 +384,14 @@ int Table::getDBTables(vector<string> &vTable,const string &dbname)
 
             //insert row
             string sRowID;
-            string sKey=insertTbKey(tbname,sRowID);
+            string sKey=insertTbKey(tbname,sRowID,mSession);
             if (sKey.empty())
             {
                 cout<<"sKey empty"<<endl;
                 break;
             }
             
-            if (!_dbPtr->Put(sKey,json_str,dbname))
+            if (!_dbPtr->Put(sKey,json_str,dbname,mSession))
             {
                cout<<"error ,db Put ,key="<<sKey<<endl;
                 break;
@@ -414,7 +414,7 @@ int Table::getDBTables(vector<string> &vTable,const string &dbname)
                             cout<<"indexUKey empty"<<endl;
                             break;
                         }
-                        if (!_dbPtr->Put(indexUKey,sRowID,dbname))
+                        if (!_dbPtr->Put(indexUKey,sRowID,dbname,mSession))
                         {
                             cout<<"error ,db Put key= "<<indexUKey<<endl;
                             break;
@@ -433,7 +433,7 @@ int Table::getDBTables(vector<string> &vTable,const string &dbname)
                             cout<<"indexNUKey empty"<<endl;
                             break;
                         }
-                        if (!_dbPtr->Put(indexNUKey,"",dbname))
+                        if (!_dbPtr->Put(indexNUKey,"",dbname,mSession))
                         {
                             cout<<"error ,db Put key= "<<sKey<<endl;
                             break;
@@ -508,7 +508,7 @@ int Table::getDBTables(vector<string> &vTable,const string &dbname)
     // t10_r1 --> ["HorseDB", "SQL Layer", 10]
     // t10_r2 --> ["HorseDB", "KV Engine", 20]
     // t10_r3 --> ["HorseDB", "Manager", 30]
-    string Table::insertTbKey(const string &tbname,string &sRowID)
+    string Table::insertTbKey(const string &tbname,string &sRowID,const map<string,string> &mSession)
     {
 
         string sTbID;
@@ -518,13 +518,13 @@ int Table::getDBTables(vector<string> &vTable,const string &dbname)
             return "";
         }
 
-        _metaPtr->getRowID(tbname,sRowID,_dbname);
+        _metaPtr->getRowID(tbname,sRowID,_dbname,mSession);
         if (sRowID.empty())
         {
             return "";
         }
 
-        TC_Common::encodeID32(TC_Common::strto<uint32_t>(sRowID),sRowID);
+        //TC_Common::encodeID32(TC_Common::strto<uint32_t>(sRowID),sRowID);
 
         return tablePrefix+sTbID+recordPrefixSep+sRowID;    
     }

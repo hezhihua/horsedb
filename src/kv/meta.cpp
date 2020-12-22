@@ -53,7 +53,7 @@ namespace horsedb{
     }
 
 
-    bool Meta::getDBID(string &dbID,const string &dbName)
+    bool Meta::getDBID(string &dbID,const string &dbName,const map<string,string> &mSession)
     {
         if (checkDB(dbID,dbName))
         {
@@ -69,13 +69,13 @@ namespace horsedb{
         if (!_db->Get(dbSEQ,value,_sysDBName))//第一次不存在
         {
             dbID="1";
-            return _db->Put(dbSEQ,dbID,_sysDBName) && _db->Put(db2idkey,dbID,_sysDBName);
+            return _db->Put(dbSEQ,dbID,_sysDBName,mSession) && _db->Put(db2idkey,dbID,_sysDBName,mSession);
         }
         else
         {
             uint64_t dbOID=TC_Common::strto<uint64_t>(value);
             dbID=TC_Common::tostr(dbOID+1);
-            return _db->Put(dbSEQ,dbID,_sysDBName) && _db->Put(db2idkey,dbID,_sysDBName);
+            return _db->Put(dbSEQ,dbID,_sysDBName,mSession) && _db->Put(db2idkey,dbID,_sysDBName,mSession);
         }
 
     }
@@ -105,7 +105,7 @@ namespace horsedb{
     }
 
 
-    bool Meta::getTbID( const string &tableName,string &tbID,const string &dbName)
+    bool Meta::getTbID( const string &tableName,string &tbID,const string &dbName,const map<string,string> &mSession)
     {       
 
         if (checkTable(tableName,tbID,dbName))
@@ -123,18 +123,18 @@ namespace horsedb{
         if (!_db->Get(tbseqkey,value,_sysDBName))//第一次不存在
         {
             tbID="1";
-            return _db->Put(tbseqkey,tbID,_sysDBName) && _db->Put(tb2idkey,tbID,_sysDBName);
+            return _db->Put(tbseqkey,tbID,_sysDBName,mSession) && _db->Put(tb2idkey,tbID,_sysDBName,mSession);
         }
         else
         {
             uint64_t tbOID=TC_Common::strto<uint64_t>(value);
             tbID=TC_Common::tostr(tbOID+1);
-            return _db->Put(tbseqkey,tbID,_sysDBName) && _db->Put(tb2idkey,tbID,_sysDBName);
+            return _db->Put(tbseqkey,tbID,_sysDBName,mSession) && _db->Put(tb2idkey,tbID,_sysDBName,mSession);
         }
         
     }
 
-    bool Meta::getRowID( const string &tableName,string &rowID,const string &dbName)
+    bool Meta::getRowID( const string &tableName,string &rowID,const string &dbName,const map<string,string> &mSession)
     {
         string value;
         string rowidkey=rowidPrefix+dbName+"_"+tableName;
@@ -145,18 +145,18 @@ namespace horsedb{
         if (!_db->Get(rowidkey,value,_sysDBName))//第一次不存在
         {
             rowID="1";
-            return _db->Put(rowidkey,rowID,_sysDBName) ;
+            return _db->Put(rowidkey,rowID,_sysDBName,mSession) ;
         }
         else
         {
             uint64_t OID=TC_Common::strto<uint64_t>(value);
             rowID=TC_Common::tostr(OID+1);
-            return _db->Put(rowidkey,rowID,_sysDBName) ;
+            return _db->Put(rowidkey,rowID,_sysDBName,mSession) ;
         }
 
     }
 
-    bool Meta::getIndexID( const string &tableName,const string &columnName,string &indexID,const string &dbName)
+    bool Meta::getIndexID( const string &tableName,const string &columnName,string &indexID,const string &dbName,const map<string,string> &mSession)
     {
         string value;
         string indexseqkey=indexSeqPrefix+dbName+"_"+tableName;
@@ -173,20 +173,20 @@ namespace horsedb{
         if (!_db->Get(indexseqkey,value,_sysDBName))//第一次不存在
         {
             indexID="1";
-            return _db->Put(indexseqkey,indexID,_sysDBName) && _db->Put(index2idkey,indexID,_sysDBName);
+            return _db->Put(indexseqkey,indexID,_sysDBName,mSession) && _db->Put(index2idkey,indexID,_sysDBName,mSession);
         }
         else
         {
             uint64_t indexOID=TC_Common::strto<uint64_t>(value);
             indexID=TC_Common::tostr(indexOID+1);
-            return _db->Put(indexseqkey,indexID,_sysDBName) && _db->Put(index2idkey,indexID,_sysDBName);
+            return _db->Put(indexseqkey,indexID,_sysDBName,mSession) && _db->Put(index2idkey,indexID,_sysDBName,mSession);
         }
     }
 
-    bool Meta::saveMeta( const string &tableName,string &value,const string &dbName)
+    bool Meta::saveMeta( const string &tableName,string &value,const string &dbName,const map<string,string> &mSession)
     {
         string metaKey=tableMetaKey(tableName,dbName);//metaPrefix+dbName+"_"+tableName;
-        return _db->Put(metaKey,value,dbName);//直接覆盖
+        return _db->Put(metaKey,value,dbName,mSession);//直接覆盖
 
     }
 

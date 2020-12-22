@@ -3,7 +3,7 @@
 
 #include "raft/Raft.h"
 #include "mysql_handle.h"
-
+#include "ClientContextImp.h"
 
 namespace horsedb{
 
@@ -13,7 +13,7 @@ class StateMachineImp:public StateMachine
     virtual ~StateMachineImp(){}
     int start();
     void on_apply(Iterator& iter);
-    void add_cp_task( SocketContext &socketContext,const shared_ptr<TC_EpollServer::SendContext> &data,TC_EpollServer::Handle *handle);
+    void add_cp_task( SocketContext &socketContext,const shared_ptr<TC_EpollServer::SendContext> &data,TC_EpollServer::Handle *handle,const string &sessionid);
 
      void on_shutdown(){cout<<"on_shutdown"<<endl;}
     void on_snapshot_save(){cout<<"on_snapshot_save"<<endl;}
@@ -33,6 +33,9 @@ class StateMachineImp:public StateMachine
 
     Node* volatile _node;
     std::atomic<int64_t> _leader_term;
+    NodeOptions _node_options;
+
+    map<string,ClientContext *> _mSendContext;
 
 };
 
