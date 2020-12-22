@@ -28,22 +28,29 @@ echo "source /opt/rh/devtoolset-7/enable" >>/etc/profile
 
 以下步骤开始安装horsedb   
 1,git clone https://github.com/hezhihua/horsedb.git  
-2,mkdir build && cd build && cmake ..  && make 
+2,cd horsedb && mkdir build && cd build && cmake ..  && make 
 
 # 用法  
-安装完horsedb后,启动horsedb  
-./horsedb-server ./config/server.cfg.yaml   
-启动成功后，可以用Mysql客户端直接连接登录到horsedb ,如  
+安装完horsedb后  
+1,单机模式启动horsedb  
+  ./horsedb-server ./config/server.cfg.yaml    
+2,raft模式启动horsedb,至少三节点   
+  设置配置文件server.cfg.yaml里面的raft_enable选项为 true,不同的实例需要配置不同的bind_mysql和local_node地址,  
+  如果在同一机器运行实例,需要在不同的目录运行,以防db目录冲突  
+3,启动成功后，可以用Mysql客户端直接连接登录到horsedb ,如   
 mysql  -u hzh -h 0.0.0.0  -P 8083 -p'hzh' test   
-
+# 创建库  
 create database dbtest  
-create table tbname  
+# 如果没有指定主键,默认生成一个id主键  
+CREATE TABLE teachers (tcname varchar(50), tc_number int, city varchar(50), grade DOUBLE not null, UNIQUE KEY mykeyname(tcname));   
+# 插入数据  
+insert into teachers(tcname,tc_number,city) values('xmtc',12,'beijing');  
+
+# 查询  
+select * from teachers;    
 
 show databases;  
 show tables;  
-
-insert into tbname() values();  
-select * from tbname;  
 
 # TODO   
 1,delete、update语法,group by等语法  
