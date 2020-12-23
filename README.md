@@ -59,7 +59,7 @@ CREATE TABLE teachers (tcname varchar(50), tc_number int, city varchar(50), grad
 
 # 插入数据 
 例子:  
-use dbtest  ;
+use dbtest  ;  
 insert into teachers(tcname,tc_number,city) values('xmtc',12,'beijing');  
 
 # 查询  
