@@ -1,5 +1,6 @@
 # horsedb
-HorseDB是一款以rocksdb作为存储引擎的数据库,兼容了Mysql协议,适合写多读少场景  
+HorseDB是一款以rocksdb作为存储引擎的数据库,兼容了Mysql协议,适合写多读少场景。
+
 支持单机模式和raft模式,raft模式是基于自研的raft共识库[horse-raft](https://github.com/hezhihua/horse-raft)实现
 
 # 依赖环境
