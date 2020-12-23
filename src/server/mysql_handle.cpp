@@ -75,39 +75,39 @@ class RaftDBCallback:public RaftDBPrxCallback
 				string sReqBuff;
 				//string sReqBuff(&reqBuff[0],reqBuff.size());
 				sReqBuff.assign(reqBuff.begin(), reqBuff.end());
-				cout<<"sReqBuff.size()="<<sReqBuff.size()<<endl;
+				TLOGINFO("sReqBuff.size()="<<sReqBuff.size()<<endl);
 				TC_EpollServer* epollServer=getEpollServer();
-				cout<<"data->uid()="<<data->uid()<<endl;
+				TLOGINFO("data->uid()="<<data->uid()<<endl);
 				TC_EpollServer::Connection *con=epollServer->getNetThreadOfFd(data->fd())->getConnectionPtr(data->uid());
 				if (!con)
 				{
-					cout<<"error,con is null"<<endl;
+					TLOGERROR("error,con is null"<<endl);
 					break;
 				}
 				
 				if (!con->getThirdConData().Is<SocketContext>()
 					||con->getThirdConData().IsNull())//
 				{
-					cout<<"error,Any is null"<<endl;
+					TLOGERROR("error,Any is null"<<endl);
 					break;
 				}
 				
 				SocketContext &tSocketContext=con->getThirdConData().AnyCast<SocketContext>();
 				if (!tSocketContext._defaultDB.empty())
 				{
-					cout<<"======had use DB:"<<tSocketContext._defaultDB<<endl;
+					TLOGINFO("======had use DB:"<<tSocketContext._defaultDB<<endl);
 				}
 				
 				if (!con->getThirdAuthState())
 				{
 					int   clientPacketid = MysqlPacket::getHeaderPacketID(sReqBuff);
-					cout<<"clientPacketid="<<clientPacketid<<endl;
+					TLOGINFO("clientPacketid="<<clientPacketid<<endl);
 					
 					if (tSocketContext._packetIDIsReset)
 					{
 						tSocketContext._lastPacketID = clientPacketid;
 
-						cout<<"set  pack id:"<<clientPacketid<<endl;
+						TLOGINFO("set  pack id:"<<clientPacketid<<endl);
 						tSocketContext._packetIDIsReset = false;
 					}
 
@@ -117,29 +117,29 @@ class RaftDBCallback:public RaftDBPrxCallback
 					{
 						if(tSocketContext._AuthRequest._authPluginData.empty())
 						{
-							cout<<"error,_AuthRequest._authPluginData is NULL"<<endl;
+							TLOGERROR("error,_AuthRequest._authPluginData is NULL"<<endl);
 							break;
 
 						}
 
 						
 						SocketContext::initAuthResponse(tSocketContext._AuthRequest._capabilities,authResponse);
-						cout<<"init,authResponse._clientCapabilities="<<authResponse._clientCapabilities<<endl;
+						TLOGINFO("init,authResponse._clientCapabilities="<<authResponse._clientCapabilities<<endl);
 						int err = MysqlPacket::unpacket2AuthRes(sReqBuff, authResponse);
 						if (err) 
 						{
-							cout<<"error,unpacket2AuthRes failed"<<endl;
+							TLOGERROR("error,unpacket2AuthRes failed"<<endl);
 							break;
 						}
 						if (!(authResponse._clientCapabilities & CLIENT_PROTOCOL_41))
 						{
 							SocketContext::sendData(tSocketContext,send,this,string("\xff\xd7\x07" "4.0 protocol is not supported"));
-							cout<<"error,4.0 protocol is not supported,authResponse._clientCapabilities="<<authResponse._clientCapabilities<<endl;
+							TLOGERROR("error,4.0 protocol is not supported,authResponse._clientCapabilities="<<authResponse._clientCapabilities<<endl);
 						}
 						if (authResponse._clientCapabilities & CLIENT_COMPRESS) 
 						{
 							tSocketContext._isClientCompressed = 1;
-							cout<<"client compressed"<<endl;
+							TLOGINFO("client compressed"<<endl);
 						}
 						if (authResponse._clientCapabilities & CLIENT_MULTI_STATEMENTS) 
 						{
@@ -150,14 +150,14 @@ class RaftDBCallback:public RaftDBPrxCallback
 						if (authResponse._database.size())
 						{
 							tSocketContext._defaultDB=authResponse._database;
-							cout<<"======connect use ,db ="<<tSocketContext._defaultDB<<endl;
+							TLOGINFO("======connect use ,db ="<<tSocketContext._defaultDB<<endl);
 						}
 						if ((authResponse._clientCapabilities & CLIENT_PLUGIN_AUTH) && (strcmp(authResponse._authPluginName.c_str(), "mysql_native_password") != 0))
 						{
 							string sDest;
 							MysqlPacket::appendAuthSwitch(sDest, "mysql_native_password",tSocketContext._AuthRequest._authPluginData);
 							SocketContext::sendData(tSocketContext, send,this, sDest);
-							cout<<"client not mysql_native_password"<<endl;
+							TLOGINFO("client not mysql_native_password"<<endl);
 							
 							break;
 						}
@@ -167,7 +167,7 @@ class RaftDBCallback:public RaftDBPrxCallback
 					else
 					{
 						tSocketContext._AuthResponse._authPluginData=sReqBuff;
-						cout<<" 2nd round auth"<<endl;
+						TLOGINFO(" 2nd round auth"<<endl);
 					}
 
 					string clientCharset=MysqlPacket::charsetGetName(authResponse._charset);
@@ -186,53 +186,24 @@ class RaftDBCallback:public RaftDBPrxCallback
 
 					con->setThirdAuthState(1);
 				
-					cout<<"========"<<clientPacketid<<endl;
+					TLOGINFO("========"<<clientPacketid<<endl);
 
 				}
 				else//exe sql
 				{
-					//test proxy
-					try
-					{
-						
-
-						AppendEntriesReq tReq;
-						AppendEntriesRes tRes;
-						
-						
-						// typedef shared_ptr<RaftDBCallback> RaftDBCallbackPtr;//RaftDBPrxCallbackPtr
-						// RaftDBCallbackPtr callback(new RaftDBCallback());
-
-
-						// tReq.groupID="groupid is 1";
-           				//  g_app._pPrx->async_appendEntries(callback,tReq);
-
-						// horsedb::TarsOutputStream<BufferWriter> os;
-						// tReq.writeTo(os);
-
-
-						// cout<<"========rpc,AppendEntries,ret="<<0<<",tRes.term="<< tRes.term<<endl;
-						
-					}
-					catch(const std::exception& e)
-					{
-						std::cerr <<"proxy error:" <<e.what()  << '\n';
-					}
-					
-					
 
 					int   clientPacketid = MysqlPacket::getHeaderPacketID(sReqBuff);
-					cout<<"exe sql,clientPacketid="<<clientPacketid<<endl;
+					TLOGINFO("exe sql,clientPacketid="<<clientPacketid<<endl);
 					tSocketContext._lastPacketID = clientPacketid;					
 
 					MysqlPacket::skipHeader(sReqBuff);
 					uint8_t command;
 					MysqlPacket::getInt8(sReqBuff,&command);
-					cout<<"exe sql,command="<<(int)command<<endl;
+					TLOGINFO("exe sql,command="<<(int)command<<endl);
 
 					string sSQL;
 					MysqlPacket::getLenStr(sReqBuff,sReqBuff.length(),sSQL);
-					cout<<"exe sql,sSQL="<<sSQL<<endl;
+					TLOGINFO("exe sql,sSQL="<<sSQL<<endl);
 					if (command==COM_INIT_DB)
 					{
 						tSocketContext._defaultDB=sSQL;
@@ -249,7 +220,7 @@ class RaftDBCallback:public RaftDBPrxCallback
 					else if (command==COM_QUIT)
 					{
 						
-						cout<<"recv client close cmd"<<endl;
+						TLOGINFO("recv client close cmd"<<endl);
 						break;
 					}
 					
@@ -267,8 +238,8 @@ class RaftDBCallback:public RaftDBPrxCallback
 						hsql::SQLParser::parse(sSQL, &result);
 						if (result.isValid()) 
 						{
-							cout<<"Parsed successfully!"<<endl;
-							cout<<"Number of statements: "<<result.size()<<endl;
+							TLOGINFO("Parsed successfully!"<<endl);
+							TLOGINFO("Number of statements: "<<result.size()<<endl);
 
 							for (auto i = 0u; i < result.size(); ++i) 
 							{
@@ -283,7 +254,7 @@ class RaftDBCallback:public RaftDBPrxCallback
 										const ShowStatement* showSt = static_cast<const hsql::ShowStatement*>(statement);
 										if (showSt->type==hsql::kShowDatabases)
 										{
-											cout<<"kShowDatabases:"<<sSQL<<endl;
+											TLOGINFO("kShowDatabases:"<<sSQL<<endl);
 											vector<string> vDatabase;
 											g_app._db->ShowDB(vDatabase);
 											Command::adminShowDatabases(tSocketContext, send,vDatabase,this);
@@ -294,7 +265,7 @@ class RaftDBCallback:public RaftDBPrxCallback
 										}
 										else if (showSt->type==hsql::kShowTables)
 										{
-											cout<<"kShowTables:"<<sSQL<<endl;
+											TLOGINFO("kShowTables:"<<sSQL<<endl);
 											if (tSocketContext._bSkipTable)//mysql连接的时候简单处理
 											{
 												SocketContext::sendOK(tSocketContext, send,this);
@@ -324,7 +295,7 @@ class RaftDBCallback:public RaftDBPrxCallback
 										const CreateStatement* createSt = static_cast<const hsql::CreateStatement*>(statement);
 										if (createSt->columns)
 										{
-											cout<<"*(createSt->columns).size()= "<<(*(createSt->columns)).size()<<endl;
+											TLOGINFO("*(createSt->columns).size()= "<<(*(createSt->columns)).size()<<endl);
 										}
 										
 										g_app._table->create(createSt,tSocketContext._defaultDB,mSession);
@@ -352,7 +323,7 @@ class RaftDBCallback:public RaftDBPrxCallback
 										string sSessionID="sess-"+TC_Common::tostr<int64_t>(g_app._sessionid) ;
 										map<string,string> mSession={{"sid",sSessionID}};
 										const InsertStatement* insertSt = static_cast<const hsql::InsertStatement*>(statement);
-										cout<<"*(insertSt->columns).size()= "<<(*(insertSt->columns)).size()<<endl;
+										TLOGINFO("*(insertSt->columns).size()= "<<(*(insertSt->columns)).size()<<endl);
 										g_app._table->insertTable(insertSt,tSocketContext._defaultDB,mSession);
 										
 										if (!g_app._bRaft)
@@ -399,8 +370,8 @@ class RaftDBCallback:public RaftDBPrxCallback
 						} 
 						else 
 						{
-							fprintf(stderr, "Given string is not a valid SQL query.\n");
-							fprintf(stderr, "%s (L%d:%d)\n",result.errorMsg(),result.errorLine(),result.errorColumn());
+							TLOGERROR("Given string is not a valid SQL query.\n");
+							TLOGERROR("errorMsg:"<<result.errorMsg()<<",errorLine:"<<result.errorLine()<<",errorColumn:" <<result.errorColumn());
 							
 						}	
 

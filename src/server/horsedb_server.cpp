@@ -39,28 +39,24 @@ void HorsedbServer::initialize(const string &cfgPath)
 {
 	cout << "initialize ok" << endl;
 
-	// _async_logger =  spdlog::rotating_logger_mt<spdlog::async_factory>("demosrv", "logs/demoserver.log", 1024 * 1024 * 5, 3);
 	// auto daily_logger = spdlog::daily_logger_mt("daily_logger", "logs/demoserver.txt", 2, 30);
-	// spdlog::set_level(spdlog::level::debug);
-	// //async_logger->flush_on(spdlog::level::info);
 	// daily_logger->flush_on(spdlog::level::debug);
-
-	// spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e][t:%t][%L]%v");
-	// spdlog::flush_every(std::chrono::seconds(1));
-	// _async_logger->info("This is a basic logger.");
 	// daily_logger->info("This is a basic logger.");
 
-	horsedb::Logger::getInstance()->init("horsedb", "logs/horsedb.log", "logs/horsedb.raft.log");
+	_cfgPath=cfgPath;
+	horsedb::Config::getInstance()->init(_cfgPath);
+	auto &_config=Config::getInstance()->getConfig();
+	string loglevel=_config["server"]["log_level"].as<string>();
+	loglevel=loglevel.empty()?"info":loglevel;
+
+	horsedb::Logger::getInstance()->init("horsedb", "logs/horsedb.log", "logs/horsedb.raft.log",loglevel);
 
 
 	_epollServer->setLocalLogger(horsedb::Logger::getInstance()->getLogger());
-	_cfgPath=cfgPath;
-
+	
 	_epollServer->setMergeHandleNetThread(true);
 
-	horsedb::Config::getInstance()->init(_cfgPath);//YAML::LoadFile(_cfgPath);// /root/svn/horsedb/config/server.cfg.yaml
-	auto &_config=Config::getInstance()->getConfig();
-
+	
 	_bRaft=_config["server"]["raft_enable"].as<bool>();
 
 	cout << "bind_mysql:" <<_config["server"]["bind_mysql"].as<string>()<< endl;
@@ -81,33 +77,11 @@ void HorsedbServer::initialize(const string &cfgPath)
 
 	_db=_bRaft?shared_ptr<DBBaseImp>(new DBBaseImp()):shared_ptr<DBBase>(new DBBase());
 
-	//_db=shared_ptr<DBBase>(pdb);
-
 	_db->init(rocksdbPath,vdb);
-	//_db= std::make_shared<DBBase>(rocksdbPath,vdb);
+
 	_meta=std::make_shared<Meta>(_db);
 	_table=std::make_shared<Table>(_meta,_db);
 
-	
-	_comm=new Communicator();
-	
-
-	static string raftObj = "horsedb.RaftDBServer.RaftDBObj@tcp -h 0.0.0.0 -p 8085";//"horsedb.RaftDBServer.RaftDBObj@tcp -h 139.186.68.18 -p 8085 -e 1";
-	_comm->setProperty("sendqueuelimit", "1000000");
-	_comm->setProperty("asyncqueuecap", "1000000");
-	_comm->setProperty("netthread", TC_Common::tostr(1));
-
-	//vector<string> vAddr=TC_Common::sepstr<string>(_config["raft"]["init_nodes"].as<string>(),":");
-	//for (size_t i = 0; i < vAddr.size(); i++)
-	{
-		_pPrx= _comm->stringToProxy<RaftDBPrx>(raftObj);
-
-		_pPrx->tars_connect_timeout(5000);
-		_pPrx->tars_async_timeout(60*1000);
-
-		//_mPrx[vAddr[i]]=_pPrx;
-		
-	}
 		
 	if (_bRaft)
 	{

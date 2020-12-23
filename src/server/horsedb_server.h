@@ -52,8 +52,8 @@ public:
 	std::shared_ptr<horsedb::Meta> _meta;
 	std::shared_ptr<horsedb::Table> _table;
 
-	RaftDBPrx _pPrx ;
-	map<string,RaftDBPrx> _mPrx;
+	//RaftDBPrx _pPrx ;
+	//map<string,RaftDBPrx> _mPrx;
 	Communicator* _comm;
 
 	StateMachineImp _smImp;
