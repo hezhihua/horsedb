@@ -35,6 +35,7 @@ ExternalProject_Add(sql-parser
         INSTALL_COMMAND       cd ${PARSER_ROOT}/src/sql-parser &&  cp -rf ${PARSER_ROOT}/src/sql-parser ${CMAKE_SOURCE_DIR}/third-party/  && cd ${CMAKE_SOURCE_DIR}/third-party/sql-parser && mkdir -p lib && mv libsqlparser.a lib
         BUILD_ALWAYS          1
 )
+add_dependencies(sql-parser iguana)
 add_dependencies(thirdparty sql-parser)
 
 
