@@ -28,7 +28,7 @@ scl命令启用只是临时的，退出shell或重启就会恢复原系统gcc版
 如果要长期使用gcc 7.3的话,执行：
 echo "source /opt/rh/devtoolset-7/enable" >>/etc/profile   
 
-以下步骤开始安装horsedb   
+最好是用拥有root权限的用户安装horsedb，以下为安装步骤  
 1,git clone https://github.com/hezhihua/horsedb.git  
 2,cd horsedb && mkdir build && cd build && cmake ..  && make 
 
