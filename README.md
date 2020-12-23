@@ -40,7 +40,7 @@ echo "source /opt/rh/devtoolset-7/enable" >>/etc/profile
   设置配置文件server.cfg.yaml里面的raft_enable选项为 true,不同的实例需要配置不同的bind_mysql和local_node地址,  
   如果在同一机器运行实例,需要在不同的目录运行,以防rocksdb 的db目录冲突
   
-3,启动成功后，可以用Mysql客户端直接连接登录到horsedb ,如   
+3,启动成功后，可以用Mysql客户端直接连接登录到leader所在机器的horsedb ,如   
 mysql  -u hzh -h 0.0.0.0  -P 8083 -p'hzh' test   
 
 # 创建库  
