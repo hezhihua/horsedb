@@ -32,6 +32,8 @@ echo "source /opt/rh/devtoolset-7/enable" >>/etc/profile
 1,git clone https://github.com/hezhihua/horsedb.git  
 2,cd horsedb && mkdir build && cd build && cmake ..  && make 
 
+ 安装过程会下载一些依赖库,如果网络的问题下载失败导致安装失败,请继续执行make命令安装。  
+ 有问题可以加QQ群咨询。
 # 用法  
 
 安装完horsedb后  
