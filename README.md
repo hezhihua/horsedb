@@ -65,7 +65,7 @@ insert into teachers(tcname,tc_number,city) values('xmtc',12,'beijing');
 # 查询  
 例子:  
 select * from teachers;    
-
+select * from teachers where tcname='xmtc';  
 show databases;  
 show tables;  
 
