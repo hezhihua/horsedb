@@ -50,10 +50,9 @@ create database dbtest
 # 创建表
   
 例子:  
-CREATE TABLE students2 (myid int ,stname varchar(50), st_number int, city varchar(50), grade DOUBLE not null,  PRIMARY KEY (myid),KEY mykeyname(stname))	;	
-如果没有指定主键,默认生成一个id主键：  
+CREATE TABLE students2 (myid int ,stname varchar(50), st_number int, city varchar(50), grade DOUBLE not null,  PRIMARY KEY (myid),KEY mykeyname(stname))	;	  
+下面建表语句没有指定主键,horsedb会为表默认生成一个名为id的主键：  
 CREATE TABLE teachers (tcname varchar(50), tc_number int, city varchar(50), grade DOUBLE not null,  KEY mykeyname(tcname));  
-或
 CREATE TABLE teachers (tcname varchar(50), tc_number int, city varchar(50), grade DOUBLE not null, UNIQUE KEY mykeyname(tcname));   
 
 # 插入数据 
