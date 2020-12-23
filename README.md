@@ -31,31 +31,41 @@ echo "source /opt/rh/devtoolset-7/enable" >>/etc/profile
 2,cd horsedb && mkdir build && cd build && cmake ..  && make 
 
 # 用法  
+
 安装完horsedb后  
 1,单机模式启动horsedb  
   ./horsedb-server ./config/server.cfg.yaml    
+  
 2,raft模式启动horsedb,至少三节点   
   设置配置文件server.cfg.yaml里面的raft_enable选项为 true,不同的实例需要配置不同的bind_mysql和local_node地址,  
-  如果在同一机器运行实例,需要在不同的目录运行,以防db目录冲突  
+  如果在同一机器运行实例,需要在不同的目录运行,以防rocksdb 的db目录冲突
+  
 3,启动成功后，可以用Mysql客户端直接连接登录到horsedb ,如   
 mysql  -u hzh -h 0.0.0.0  -P 8083 -p'hzh' test   
+
 # 创建库  
 create database dbtest  
-# 如果没有指定主键,默认生成一个id主键  
+
+# 创建表
+如果没有指定主键,默认生成一个id主键  
+例子:  
 CREATE TABLE teachers (tcname varchar(50), tc_number int, city varchar(50), grade DOUBLE not null, UNIQUE KEY mykeyname(tcname));   
-# 插入数据  
+
+# 插入数据 
+例子:  
 insert into teachers(tcname,tc_number,city) values('xmtc',12,'beijing');  
 
 # 查询  
+例子:  
 select * from teachers;    
 
 show databases;  
 show tables;  
 
-# TODO   
+# 二期   
 1,delete、update语法,group by等语法  
 2,事务实现  
-
+3,支持redis协议  
 
 # 感谢
 1,horsedb底层用[RocksDB](https://github.com/facebook/rocksdb)作为存储引擎  
