@@ -45,7 +45,8 @@ mysql  -u hzh -h 0.0.0.0  -P 8083 -p'hzh' test
 
 # 创建库  
 create database dbtest  
-
+如果不用命令行创建库,也可以在配置文件里面的dbname选项指定数据名,程序会自动生成数据库,多个数据库以逗号分隔(如:a,b,c)  
+  
 # 创建表
   
 例子:  
@@ -57,6 +58,7 @@ CREATE TABLE teachers (tcname varchar(50), tc_number int, city varchar(50), grad
 
 # 插入数据 
 例子:  
+use dbtest  ;
 insert into teachers(tcname,tc_number,city) values('xmtc',12,'beijing');  
 
 # 查询  
