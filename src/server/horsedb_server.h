@@ -33,6 +33,11 @@ public:
 
 	bool isLeader()
 	{ 
+		if (!_bRaft)
+		{
+			return false;
+		}
+		
 		if (_smImp._node)
 		{
 			return _smImp._node->is_leader();
