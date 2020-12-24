@@ -28,9 +28,11 @@ scl命令启用只是临时的，退出shell或重启就会恢复原系统gcc版
 如果要长期使用gcc 7.3的话,执行：
 echo "source /opt/rh/devtoolset-7/enable" >>/etc/profile   
 
-最好是用拥有root权限的用户安装horsedb，以下为安装步骤  
-1,git clone https://github.com/hezhihua/horsedb.git  
-2,cd horsedb && mkdir build && cd build && cmake ..  && make 
+最好是用拥有root权限的用户安装horsedb，以下为centos安装步骤  
+1,yum -y install epel-release && yum -y install libzstd-devel  
+2,yum -y install lz4 && yum -y install lz4-devel  
+3,git clone https://github.com/hezhihua/horsedb.git  
+4,cd horsedb && mkdir build && cd build && cmake ..  && make 
 
  安装过程会下载一些依赖库,如果网络的问题下载失败导致安装失败,请继续执行make命令安装。  
  有问题可以加QQ群咨询。
@@ -54,7 +56,7 @@ create database dbtest
 # 创建表
   
 例子:  
-CREATE TABLE students2 (myid int ,stname varchar(50), st_number int, city varchar(50), grade DOUBLE not null,  PRIMARY KEY (myid),KEY mykeyname(stname))	;	  
+CREATE TABLE students (myid int ,stname varchar(50), st_number int, city varchar(50), grade DOUBLE not null,  PRIMARY KEY (myid),KEY mykeyname(stname))	;	  
 下面建表语句没有指定主键,horsedb会为表默认生成一个名为id的主键：  
 CREATE TABLE teachers (tcname varchar(50), tc_number int, city varchar(50), grade DOUBLE not null,  KEY mykeyname(tcname));  
 CREATE TABLE teachers (tcname varchar(50), tc_number int, city varchar(50), grade DOUBLE not null, UNIQUE KEY mykeyname(tcname));   
