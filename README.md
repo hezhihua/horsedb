@@ -28,7 +28,7 @@ scl命令启用只是临时的，退出shell或重启就会恢复原系统gcc版
 如果要长期使用gcc 7.3的话,执行：
 echo "source /opt/rh/devtoolset-7/enable" >>/etc/profile   
 
-最好是用拥有root权限的用户安装horsedb，以下为centos安装步骤  
+最好是用拥有root权限的用户安装horsedb，以下为centos环境下安装步骤  
 1,yum -y install epel-release && yum -y install libzstd-devel  
 2,yum -y install lz4 && yum -y install lz4-devel  
 3,git clone https://github.com/hezhihua/horsedb.git  
